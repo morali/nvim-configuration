@@ -1,0 +1,514 @@
+"plugin (Vundle) config
+set rtp+=~/.config/nvim/bundle/Vundle.vim
+set rtp+=~/.config/nvim/bundle/
+set rtp+=~/.fzf
+call vundle#begin("~/.config/nvim/bundle")
+
+Plugin 'nvim-lua/plenary.nvim'
+Plugin 'nvim-telescope/telescope.nvim'
+Plugin 'nvim-telescope/telescope-fzf-native.nvim', { 'oninstall': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-rhubarb'
+Plugin 'tpope/vim-tbone'
+Plugin 'ntpeters/vim-better-whitespace'
+Plugin 'rkitover/vimpager'
+Plugin 'vim-python/python-syntax'
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
+Plugin 'bignimbus/pop-punk.vim'
+Plugin 'VundleVim/Vundle.vim'
+"Plugin 'airblade/vim-gitgutter'
+"Plugin 'vim-airline/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
+Plugin 'tpope/vim-unimpaired'
+Plugin 'preservim/nerdtree'
+"Plugin 'preservim/tagbar'
+Plugin 'preservim/vim-markdown'
+"Plugin 'alepez/vim-gtest'
+"Plugin 'inkarkat/vim-mark'
+"Plugin 'inkarkat/vim-ingo-library'
+Plugin 'NLKNguyen/papercolor-theme'
+Plugin 'junegunn/seoul256.vim'
+Plugin 'protesilaos/tempus-themes-vim'
+Plugin 'chrisbra/csv.vim'
+Plugin 'stsewd/fzf-checkout.vim'
+Plugin 'andymass/vim-matchup'
+Plugin 'AndrewRadev/linediff.vim'
+"Plugin 'folke/lazy.nvim'
+"Plugin 'zbirenbaum/copilot.lua'
+
+" Yocto
+Plugin 'arnstein/yoctolog.vim'
+Plugin 'kergoth/vim-bitbake'
+
+Plugin 'blazkowolf/gruber-darker.nvim'
+
+if has('nvim')
+	Plugin 'neovim/nvim-lspconfig'
+	Plugin 'williamboman/mason.nvim'
+	Plugin 'hrsh7th/cmp-nvim-lsp'
+	Plugin 'hrsh7th/cmp-buffer'
+	Plugin 'hrsh7th/cmp-path'
+	Plugin 'hrsh7th/cmp-cmdline'
+	Plugin 'hrsh7th/nvim-cmp'
+	Plugin 'hrsh7th/cmp-vsnip'
+	Plugin 'hrsh7th/vim-vsnip'
+	Plugin 'hrsh7th/vim-vsnip-integ'
+	Plugin 'hrsh7th/cmp-nvim-lsp-signature-help'
+	Plugin 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+	Plugin 'nvim-treesitter/nvim-treesitter-context'
+	Plugin 'stevearc/aerial.nvim'
+	Plugin 'folke/which-key.nvim'
+else
+	Plugin 'prabirshrestha/async.vim'
+	Plugin 'prabirshrestha/vim-lsp', {'pinned': 1}
+endif
+"Plugin 'jceb/vim-orgmode'
+"Plugin 'n0v1c3/vira', { 'do': './install.sh' }
+
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+
+if !has('nvim')
+	" enable this for logging
+	let g:lsp_log_verbose = 0
+	"let g:lsp_log_file = expand('~/vim-lsp.log')
+
+	let g:lsp_semantic_enabled = 1
+else
+	lua require('lspconfig').clangd.setup{}
+	lua require("mason").setup()
+endif
+
+let vira_config_servers = $HOME . '/.config/vira/vira_servers.json'
+
+command! ClearProgram let w = win_getid()
+      \ | execute 'Program'
+      \ | let h = winheight(0)
+      \ | resize 1
+      \ | redraw
+      \ | execute 'resize ' . h
+      \ | call win_gotoid(w)
+
+
+"miscellaneous config
+let g:python_highlight_all = 1
+let g:netrw_silent = 1
+let g:rg_highlight = 1
+set viminfo='1000,f1
+
+set cursorline
+set relativenumber
+set nu rnu
+set ignorecase smartcase
+set updatetime=300
+set is hls
+set conceallevel=2
+set mouse=
+
+syntax enable
+
+"FZF config
+"let $FZF_DEFAULT_OPTS="--preview-window 'right:57%'
+"			\ --bind ctrl-y:preview-up,ctrl-e:preview-down,
+"			\ctrl-b:preview-page-up,ctrl-f:preview-page-down,
+"			\ctrl-u:page-up,ctrl-d:page-down,
+"			\shift-up:preview-top,shift-down:preview-bottom,
+"			\alt-up:half-page-up,alt-down:half-page-down"
+
+"set the same colorscheme in fzf
+let FZF_DEFAULT_OPTS="--color=bg+:234,bg:16,border:0,spinner:214,hl:33,fg:231,header:33,info:165,pointer:214,marker:220,fg+:231,preview-bg:237,prompt:214,hl+:214"
+
+let $FZF_DEFAULT_COMMAND="rg --files --type-add 'build:*.{tgz,siginfo,symbols,o}' -Tbuild"
+
+"command! -bang -nargs=* Rg call fzf#vim#grep("rg -u --type-add 'build:*.{tgz,siginfo,symbols,o}' -Tbuild --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, <bang>0)
+
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+let g:fzf_layout = { 'down': '75%' }
+let g:rg_command = '
+  \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
+  \ -g "*.{js,json,php,md,styl,jade,html,config,py,cpp,c,go,hs,rb,conf}"
+  \ -g "!*.{gz,tgz,min.js,swp,o,zip}"
+  \ -g "!{.git,node_modules,vendor}/*" '
+
+  function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val, "lnum": 1 }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+"vim gdb
+packadd termdebug
+let g:termdebug_wide = 1
+nnoremap <silent> <leader>d :Termdebug<CR>
+nnoremap <silent> <leader>e :Evaluate<CR>
+nnoremap <silent> <F8> :Break<CR>
+nnoremap <silent> <leader><F8> :Clear<CR>
+nnoremap <silent> <leader>db :Break<CR>
+nnoremap <silent> <leader>dr :Clear<CR>
+nnoremap <silent> <F9> :Finish<CR>
+nnoremap <silent> <leader>ds :Step<CR>
+nnoremap <silent> <F10> :Over<CR>
+nnoremap <silent> <leader>dn :Over<CR>
+nnoremap <silent> <F11> :Step<CR>
+nnoremap <silent> <leader>df :Finish<CR>
+nnoremap <silent> <F12> :Continue<CR>
+nnoremap <silent> <leader>dc :Continue<CR>
+"<esc> to go to normal mode
+:tnoremap <Esc> <C-\><C-n>
+"move around windows with alt + h,j,k,l
+:tnoremap <A-h> <C-\><C-N><C-w>h
+:tnoremap <A-j> <C-\><C-N><C-w>j
+:tnoremap <A-k> <C-\><C-N><C-w>k
+:tnoremap <A-l> <C-\><C-N><C-w>l
+:inoremap <A-h> <C-\><C-N><C-w>h
+:inoremap <A-j> <C-\><C-N><C-w>j
+:inoremap <A-k> <C-\><C-N><C-w>k
+:inoremap <A-l> <C-\><C-N><C-w>l
+:nnoremap <A-h> <C-w>h
+:nnoremap <A-j> <C-w>j
+:nnoremap <A-k> <C-w>k
+:nnoremap <A-l> <C-w>l
+
+nnoremap K <nop>
+xnoremap K <nop>
+
+"Yank to TMUX buffer
+:vnoremap <silent> <leader>y :Tyank<CR>
+
+"aerial
+nnoremap <silent> <leader>a :AerialToggle<CR>
+
+"fold config
+set foldmethod=syntax
+set foldlevel=4
+
+"vim-gtest
+let g:gtest#gtest_command = ""
+
+"markdown
+let g:vim_markdown_autowrite = 1
+let g:vim_markdown_strikethrough = 1
+
+"NERDtree 
+nnoremap <silent> <F3> :NERDTreeFind<CR>
+nnoremap <silent> <F4> :NERDTreeToggle<CR>
+
+"FZF Buffers
+nnoremap <silent> <leader>bb :Buffers<CR>
+
+"FZF git
+nnoremap <silent> <leader>gb :GBranches<CR>
+let g:fzf_branch_actions = {
+      \ 'diff': {
+      \   'prompt': 'Diff> ',
+      \   'execute': 'Git diff {branch}',
+      \   'multiple': v:false,
+      \   'keymap': 'ctrl-f',
+      \   'required': ['branch'],
+      \   'confirm': v:false,
+      \ },
+      \}
+
+"custom cursor and diff coloring
+colorscheme pop-punk
+"colorscheme zaibatsu
+"colorscheme gruber-darker
+"hi Search ctermfg=Red
+"hi CursorLine   cterm=NONE ctermbg=blue ctermfg=white
+hi debugPC term=reverse ctermbg=20 guibg=#0000d7
+"hi DiffText   cterm=none ctermfg=Black ctermbg=Red gui=none guifg=Black guibg=Red
+"hi DiffChange cterm=none ctermfg=Black ctermbg=LightMagenta gui=none guifg=Black guibg=LightMagenta
+
+"tabcolumn
+match ErrorMsg '\%>100v.\+' "color characters which exceeds 100 chars
+nnoremap <silent> <leader>c :execute "set colorcolumn=" . (&colorcolumn == "" ? "100" : "")<CR>
+highlight ColorColumn ctermbg=blue
+highlight Search2 guifg=white guibg=blue
+"hi TreesitterContext ctermbg=237 guibg=#362b49
+"hi NormalFloat ctermbg=237 guibg=#362b49
+
+
+"vim-airline config
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline_theme = 'pop_punk'
+"set noshowmode
+"let g:airline_section_z = airline#section#create(['windowswap', '%3p%% ', 'linenr', ':%3v'])
+
+""hotkeys mapping
+nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <silent> <Leader>rg :Rg<CR>
+nnoremap <silent> <Leader>] :Rg <C-r><C-w><CR>
+nnoremap <silent> <Leader>gl :Lines <C-r><C-w><CR>
+nnoremap <silent> <Leader>gt :Windows<CR>
+nnoremap <silent> <Leader>pp :Page<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <Leader>p :set paste!<CR>
+nnoremap <silent> <C-l> :nohl<CR><C-l>
+
+nnoremap <silent> <C-w>x :tabclose<CR>
+nnoremap <silent> <C-w>c :tabnew<CR>
+
+"vimdiff
+nnoremap <silent> <leader>dp V:diffput<cr>
+nnoremap <silent> <leader>dg V:diffget<cr>
+
+"indent to 4 spaces
+filetype plugin indent on
+" show existing tab with 4 spaces width
+set tabstop=8
+" when indenting with '>', use 4 spaces width
+set shiftwidth=8
+" On pressing tab, insert 4 spaces
+set noexpandtab
+
+"whitespace vim config
+let g:better_whitespace_enabled=1
+let g:show_spaces_that_precede_tabs=1
+nnoremap ]w :NextTrailingWhitespace<CR>
+nnoremap [w :PrevTrailingWhitespace<CR>
+"show whitespace characters
+:set listchars=eol:$,tab:>·,trail:~,extends:>,precedes:<,space:␣
+nnoremap <F5> :set list!<CR>
+
+"lsp server config
+if !has('nvim')
+	if executable('clangd')
+		au User lsp_setup call lsp#register_server({
+					\ 'name': 'clangd',
+					\ 'cmd': {server_info->['clangd', '--log=verbose', '-background-index']},
+					\ 'initialization_options': {
+						\   'highlight': { 'lsRanges' : v:true },
+						\ },
+						\ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+						\ })
+	endif
+
+	if executable('pylsp')
+		au User lsp_setup call lsp#register_server({
+					\ 'name': 'pylsp',
+					\ 'cmd': {server_info->['pylsp']},
+					\ 'whitelist': ['python'],
+					\ })
+	endif
+
+	if executable('pyls')
+		au User lsp_setup call lsp#register_server({
+					\ 'name': 'pyls',
+					\ 'cmd': {server_info->['pyls']},
+					\ 'whitelist': ['python'],
+					\ })
+	endif
+
+	function! s:on_lsp_buffer_enabled() abort
+		setlocal omnifunc=lsp#complete
+		setlocal signcolumn=yes
+		if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+		nmap <buffer> gd <plug>(lsp-definition)
+		nmap <buffer> gs <plug>(lsp-document-symbol-search)
+		nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+		nmap <buffer> gr <plug>(lsp-references)
+		nmap <buffer> gi <plug>(lsp-implementation)
+		"    nmap <buffer> gt <plug>(lsp-type-definition)
+		nmap <buffer> <leader>rn <plug>(lsp-rename)
+		nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+		nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+		nmap <buffer> K <plug>(lsp-hover)
+		"    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+		"    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+		let g:lsp_format_sync_timeout = 1000
+		autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+	endfunction
+
+	augroup lsp_install
+		au!
+		" call s:on_lsp_buffer_enabled only for languages that has the server registered.
+		autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+	augroup END
+endif
+
+"display tabs numbers on the tabline
+function! Tabline()
+  let s = ''
+  for i in range(tabpagenr('$'))
+    let tab = i + 1
+    let winnr = tabpagewinnr(tab)
+    let buflist = tabpagebuflist(tab)
+    let bufnr = buflist[winnr - 1]
+    let bufname = bufname(bufnr)
+    let bufmodified = getbufvar(bufnr, "&mod")
+
+    let s .= '%' . tab . 'T'
+    let s .= (tab == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#')
+    let s .= ' ' . tab .':'
+    let s .= (bufname != '' ? '['. fnamemodify(bufname, ':t') . '] ' : '[No Name] ')
+
+    if bufmodified
+      let s .= '[+] '
+    endif
+  endfor
+  let s .= '%#TabLineFill#'
+  if (exists("g:tablineclosebutton"))
+    let s .= '%=%999XX'
+  endif
+  return s
+endfunction
+set tabline=%!Tabline()
+
+if has('nvim')
+	nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+	nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+	nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.hover()<CR>
+	nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+	nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+	nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+	nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+
+	nnoremap <silent> <leader>la <cmd>lua vim.lsp.buf.code_action()<CR>
+	nnoremap <silent> <leader>lf <cmd>lua vim.lsp.buf.formatting()<CR>
+	nnoremap <silent> <leader>lr <cmd>lua vim.lsp.buf.range_formatting()<CR>
+	xnoremap <silent> <leader>lr <cmd>lua vim.lsp.buf.range_formatting()<CR>
+	set completeopt=menu,menuone,noselect
+
+	lua require('init')
+endif
+
+
+" highlight the word under cursor (CursorMoved is inperformant)
+highlight WordUnderCursor ctermfg=white ctermbg=blue
+"autocmd CursorHold * call HighlightCursorWord()
+nnoremap <silent> <leader>i :call HighlightCursorWord()<CR>
+nnoremap <silent> <leader><c-i> :hi clear WordUnderCursor<CR>
+function! HighlightCursorWord()
+    " if hlsearch is active, don't overwrite it!
+    let search = getreg('/')
+    let cword = expand('<cword>')
+    if match(cword, search) == -1
+        exe printf('match WordUnderCursor /\V\<%s\>/', escape(cword, '/\'))
+    endif
+endfunction
+
+
+" NOTE: You can use other key to expand snippet.
+
+" Expand
+imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" Toggle quickfix list
+function! ToggleQuickFix()
+    if getqflist({'winid' : 0}).winid
+        cclose
+    else
+        copen
+    endif
+endfunction
+
+command! -nargs=0 -bar ToggleQuickFix call ToggleQuickFix()
+
+nnoremap <leader>q :ToggleQuickFix<CR>
+
+"To be mapped:
+"
+"G difftool api6/main... -y "diff against api6/main in tabs
+
+if v:version < 700 || exists('loaded_switchcolor') || &cp
+	finish
+endif
+
+let loaded_switchcolor = 1
+
+let paths = split(globpath(&runtimepath, 'colors/*.vim'), "\n")
+let s:swcolors = map(paths, 'fnamemodify(v:val, ":t:r")')
+let s:swskip = [ '256-jungle', '3dglasses', 'calmar256-light', 'coots-beauty-256', 'grb256' ]
+let s:swback = 0    " background variants light/dark was not yet switched
+let s:swindex = 0
+
+function! SwitchColor(swinc)
+
+	" if have switched background: dark/light
+	if (s:swback == 1)
+		let s:swback = 0
+		let s:swindex += a:swinc
+		let i = s:swindex % len(s:swcolors)
+
+		" in skip list
+		if (index(s:swskip, s:swcolors[i]) == -1)
+			execute "colorscheme " . s:swcolors[i]
+		else
+			return SwitchColor(a:swinc)
+		endif
+
+	else
+		let s:swback = 1
+		if (&background == "light")
+			execute "set background=dark"
+		else
+			execute "set background=light"
+		endif
+
+		" roll back if background is not supported
+		if (!exists('g:colors_name'))
+			return SwitchColor(a:swinc)
+		endif
+	endif
+
+	" show current name on screen. :h :echo-redraw
+	redraw
+	execute "colorscheme"
+endfunction
+
+map <leader>-        :call SwitchColor(1)<CR>
+map <leader>+      :call SwitchColor(-1)<CR>
+
+" Status Line {  
+	"show current branch in status line
+	"set statusline=%<%f\ ah%m%r%{FugitiveStatusline()}%=%-14.(%l,%c%V%)\ %P
+        set laststatus=2                             " always show statusbar  
+        set statusline=  
+        set statusline+=%-10.3n\                     " buffer number  
+        set statusline+=%f\                          " filename   
+        set statusline+=%h%m%r%w                     " status flags  
+        set statusline+=\[%{strlen(&ft)?&ft:'none'}] " file type  
+        set statusline+=%=                           " right align remainder  
+        set statusline+=0x%-8B                       " character value  
+        set statusline+=%-14(%l,%c%V%)               " line, character  
+        set statusline+=%<%P                         " file position  
+"}
+
+" Search for selected text, forwards or backwards.
+vnoremap <silent> * :<C-U>
+  \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
+  \gvy/<C-R>=&ic?'\c':'\C'<CR><C-R><C-R>=substitute(
+  \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
+  \gVzv:call setreg('"', old_reg, old_regtype)<CR>
+vnoremap <silent> # :<C-U>
+  \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
+  \gvy?<C-R>=&ic?'\c':'\C'<CR><C-R><C-R>=substitute(
+  \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
+  \gVzv:call setreg('"', old_reg, old_regtype)<CR>
