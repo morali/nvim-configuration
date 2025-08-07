@@ -1,141 +1,57 @@
--- list the plugins to install
 return {
-    -- better syntax highlighting
-    {
-        'tpope/vim-fugitive',
-    },
-    {
-        'tpope/vim-rhubarb',
-    },
-    {
-        'tpope/vim-tbone',
-    },
-    {
-        'ntpeters/vim-better-whitespace',
-    },
-    {
-        'rkitover/vimpager',
-    },
-    {
-        'vim-python/python-syntax',
-    },
-    {
-        'bignimbus/pop-punk.vim',
-    },
-    {
-        'tpope/vim-unimpaired',
-    },
-    {
-        'preservim/nerdtree',
-    },
-    {
-        'andymass/vim-matchup',
-    },
+    { 'tpope/vim-fugitive' },
+    { 'tpope/vim-rhubarb' },
+    { 'tpope/vim-tbone' },
+    { 'ntpeters/vim-better-whitespace' },
+    { 'rkitover/vimpager' },
+    { 'vim-python/python-syntax' },
+    { 'tpope/vim-unimpaired' },
+    { 'andymass/vim-matchup' },
+    { 'stevearc/conform.nvim', opts = {} },
+    { 'kevinhwang91/nvim-bqf', ft = 'qf' },
+    { "junegunn/fzf", build = "./install --bin" },
     {
         'andrewradev/linediff.vim',
+        keys = {
+            { '<leader>ld', ':Linediff<CR>', mode = 'v', desc = "Line Diff" }
+        }
     },
     {
-        'stevearc/aerial.nvim',
-        opts = {},
-        -- optional dependencies
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-            "nvim-tree/nvim-web-devicons"
-        },
-    },
-    { "junegunn/fzf",                           build = "./install --bin" },
-    {
-        "ibhagwan/fzf-lua",
-        -- optional for icon support
-        dependencies = { "nvim-tree/nvim-web-devicons" },
+        'ojroques/nvim-osc52',
         config = function()
-            -- calling `setup` is optional for customization
-            require("fzf-lua").setup({})
-        end,
+            vim.keymap.set('n', '<leader>c', require('osc52').copy_operator, { expr = true })
+            vim.keymap.set('n', '<leader>cc', '<leader>c_', { remap = true })
+            vim.keymap.set('v', '<leader>c', require('osc52').copy_visual)
+        end
+    },
+    {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
         opts = {
-            fzf_opts = {
-                ["--history"] = "~/.local/share/fzf-history",
+            library = {
+                -- See the configuration section for more details
+                -- Load luvit types when the `vim.uv` word is found
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
             },
         },
     },
     {
-        'nvim-treesitter/nvim-treesitter',
-        build = ':tsupdate',
-    },
-    { 'nvim-treesitter/nvim-treesitter-context' },
-    --{
-    --	"zbirenbaum/copilot.lua",
-    --	cmd = "copilot",
-    --	event = "insertenter",
-    --	config = function()
-    --		require("copilot").setup({
-    --			suggestion = { enabled = false },
-    --			panel = { enabled = false },
-    --		})
-    --	end,
-    --},
-    {
-        "zbirenbaum/copilot-cmp",
-        config = function()
-            require("copilot_cmp").setup()
-        end
-    },
-    {
-        'folke/which-key.nvim',
-    },
-    {
-        'nvim-telescope/telescope.nvim',
-        lazy = true,
+        "yetone/avante.nvim",
+        build = "make",
+        event = "VeryLazy",
+        opts = require("config.avante"),
         dependencies = {
-            'nvim-lua/plenary.nvim'
-
-        }
-    },
-    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -s. -bbuild -dcmake_build_type=release && cmake --build build --config release' },
-    {
-        'hrsh7th/cmp-nvim-lsp'
-    },
-    {
-        'hrsh7th/cmp-buffer'
-    },
-    {
-        'hrsh7th/cmp-path'
-    },
-    {
-        'hrsh7th/cmp-cmdline'
-    },
-    {
-        'hrsh7th/nvim-cmp'
-    },
-    {
-        'hrsh7th/cmp-vsnip'
-    },
-    {
-        'hrsh7th/vim-vsnip'
-    },
-    {
-        'hrsh7th/vim-vsnip-integ'
-    },
-    {
-        'hrsh7th/cmp-nvim-lsp-signature-help'
-    },
-    {
-        'kevinhwang91/nvim-bqf',
-        ft = 'qf'
-    },
-    {
-        "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
-        "neovim/nvim-lspconfig",
-    },
-    {
-        'stevearc/conform.nvim',
-        opts = {},
-    },
-    { 'ojroques/nvim-osc52' },
-    { "blazkowolf/gruber-darker.nvim" },
-    {
-        'nvim-lualine/lualine.nvim',
-        dependencies = { 'nvim-tree/nvim-web-devicons' }
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "echasnovski/mini.pick",
+            "nvim-telescope/telescope.nvim",
+            "folke/snacks.nvim",
+            "nvim-tree/nvim-web-devicons",
+            {
+                "MeanderingProgrammer/render-markdown.nvim",
+                opts = { file_types = { "markdown", "Avante" } },
+                ft = { "markdown", "Avante" },
+            },
+        },
     },
 }

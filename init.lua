@@ -15,9 +15,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Load core configurations
+require("core.options")
+require("core.keymaps")
 
--- Tell lazy.nvim to load all files from the `lua/plugins/` directory
+-- Setup lazy.nvim
 require("lazy").setup("plugins")
-require "config"
-require "remap"
-require "misc"
