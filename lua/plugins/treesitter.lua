@@ -12,7 +12,12 @@ return {
             auto_install = true,
         },
         config = function(_, opts)
-            require('nvim-treesitter.configs').setup(opts)
+            local ok, configs = pcall(require, 'nvim-treesitter.configs')
+            if ok then
+                configs.setup(opts)
+            else
+                require('nvim-treesitter').setup(opts)
+            end
         end,
     },
     {
