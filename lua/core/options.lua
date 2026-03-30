@@ -4,19 +4,20 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.cursorline = true
 vim.opt.expandtab = false
-vim.opt.foldlevel = 6
-vim.opt.foldmethod = "syntax"
+vim.opt.foldlevel = 99
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
 vim.opt.incsearch = true
-vim.opt.laststatus = 2
+vim.opt.laststatus = 3
 vim.opt.listchars = "eol:$,tab:>·,trail:~,extends:>,precedes:<,space:␣"
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.shiftwidth = 8
 vim.opt.smartcase = true
 vim.opt.tabstop = 8
-vim.opt.updatetime = 300
+vim.opt.updatetime = 200
 
 -- Global variables
 vim.g.termdebug_wide = 1
@@ -37,3 +38,11 @@ vim.cmd [[match ErrorMsg '\%>100v.\+']]
 
 -- Enable filetype plugins and indentation
 vim.cmd [[filetype plugin indent on]]
+
+-- Set the directory for persistent undo files
+-- This uses the standard Neovim data path
+local undodir = vim.fn.stdpath('data') .. '/undodir'
+vim.opt.undodir = undodir
+
+-- Enable persistent undo
+vim.opt.undofile = true

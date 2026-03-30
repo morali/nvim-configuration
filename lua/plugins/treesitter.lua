@@ -1,52 +1,53 @@
+
 return {
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
-        config = function()
-            require('nvim-treesitter.configs').setup {
-                ensure_installed = {
-                    'vim', 'javascript', 'typescript', 'css', 'html', 'json', 'lua', 'cpp', 'c', 'python', 'matlab', 'bash', 'verilog', 'groovy', 'dockerfile', 'vimdoc',
-                },
-                auto_install = false,
-                sync_install = false,
-                highlight = {
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter-textobjects',
+        },
+        opts = {
+            ensure_installed = {
+                'vim', 'javascript', 'typescript', 'css', 'html', 'json', 'lua',
+                'cpp', 'c', 'python', 'matlab', 'bash', 'verilog', 'groovy',
+                'dockerfile', 'vimdoc',
+            },
+            auto_install = true,
+            textobjects = {
+                move = {
                     enable = true,
-                    additional_vim_regex_highlighting = false,
-                },
-                indent = { enable = true },
-                textobjects = {
-                    move = {
-                      enable = true,
-                      set_jumps = true,
-                      goto_next_start = {
+                    set_jumps = true,
+                    goto_next_start = {
                         ["]m"] = "@function.outer",
-                        ["]]"] = { query = "@class.outer", desc = "Next class start" },
+                        ["]]"] = "@class.outer",
                         ["]o"] = "@loop.*",
-                        ["]s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
-                        ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
-                      },
-                      goto_next_end = {
+                        ["]s"] = { query = "@scope", query_group = "locals" },
+                        ["]z"] = { query = "@fold", query_group = "folds" },
+                    },
+                    goto_next_end = {
                         ["]M"] = "@function.outer",
                         ["]["] = "@class.outer",
-                      },
-                      goto_previous_start = {
+                    },
+                    goto_previous_start = {
                         ["[m"] = "@function.outer",
                         ["[["] = "@class.outer",
-                      },
-                      goto_previous_end = {
+                    },
+                    goto_previous_end = {
                         ["[M"] = "@function.outer",
                         ["[]"] = "@class.outer",
-                      },
-                      goto_next = {
+                    },
+                    goto_next = {
                         ["]d"] = "@conditional.outer",
-                      },
-                      goto_previous = {
+                    },
+                    goto_previous = {
                         ["[d"] = "@conditional.outer",
-                      }
                     },
                 },
-            }
+            },
+        },
+        config = function(_, opts)
+            require('nvim-treesitter').setup(opts)
         end,
     },
-    { 'nvim-treesitter/nvim-treesitter-context' },
+    { 'nvim-treesitter/nvim-treesitter-context', event = "BufReadPost" },
 }

@@ -1,3 +1,4 @@
+
 require('lualine').setup {
     options = {
         icons_enabled = true,
@@ -10,15 +11,20 @@ require('lualine').setup {
         },
         ignore_focus = {},
         always_divide_middle = true,
-        globalstatus = false,
+        globalstatus = true, 
     },
     sections = {
         lualine_a = { 'mode' },
-        lualine_b = { 'branch', 'diff', {
-            function()
-                return "Buf " .. vim.fn.bufnr('%')
-            end
-        }, 'diagnostics' },
+        lualine_b = { 
+            'branch', 
+            'diff', 
+            {
+                function()
+                    return "Buf " .. vim.api.nvim_get_current_buf()
+                end
+            }, 
+            'diagnostics' 
+        },
         lualine_c = { 'filename' },
         lualine_x = { 'encoding', 'fileformat', 'filetype' },
         lualine_y = { 'progress' },
