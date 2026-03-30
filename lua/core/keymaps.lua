@@ -38,6 +38,20 @@ local function toggle_quickfix()
 end
 vim.keymap.set('n', '<Leader>q', toggle_quickfix, { desc = "Toggle Quickfix Window" })
 
+-- Toggle Copilot completions
+local copilot_enabled = true
+local function toggle_copilot()
+    copilot_enabled = not copilot_enabled
+    if copilot_enabled then
+        vim.cmd("Copilot enable")
+        vim.notify("Copilot enabled")
+    else
+        vim.cmd("Copilot disable")
+        vim.notify("Copilot disabled")
+    end
+end
+vim.keymap.set('n', '<Leader>cp', toggle_copilot, { desc = "Toggle Copilot" })
+
 -- Termdebug
 -- vim.keymap.set('n', '<leader>d', ':Termdebug<CR>')
 -- vim.keymap.set('n', '<leader>e', ':Evaluate<CR>')

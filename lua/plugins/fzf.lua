@@ -53,17 +53,7 @@ return {
             -- Register as vim.ui.select handler
             fzf.register_ui_select()
 
-            -- Use git_files in git repos, fallback to files
-            local project_files = function()
-                local git_dir = vim.fn.finddir(".git", vim.fn.getcwd() .. ";")
-                if git_dir ~= "" then
-                    fzf.git_files()
-                else
-                    fzf.files()
-                end
-            end
-
-            vim.keymap.set("n", "<C-p>", project_files, { desc = "Find files (git-aware)" })
+            vim.keymap.set("n", "<C-p>", fzf.files, { desc = "Find files" })
             vim.keymap.set("n", "<leader>rg", fzf.live_grep, { desc = "[R]ip[g]rep" })
             vim.keymap.set("n", "<leader>]", fzf.grep_cword, { desc = "[G]rep word under [C]ursor" })
             vim.keymap.set("n", "<leader>gl", fzf.blines, { desc = "[G]rep [L]ines in buffer" })
@@ -79,9 +69,6 @@ return {
             -- LSP integration (replaces telescope for LSP pickers)
             vim.keymap.set("n", "<leader>lr", fzf.lsp_references, { desc = "LSP references" })
             vim.keymap.set("n", "<leader>ls", fzf.lsp_document_symbols, { desc = "LSP symbols" })
-
-            vim.g.copilot_no_tab_map = true
-            vim.keymap.set("i", "<S-Tab>", 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false, desc = "Accept Copilot suggestion" })
         end,
     },
 }
