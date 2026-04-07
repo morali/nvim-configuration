@@ -9,6 +9,16 @@ return {
     { 'andymass/vim-matchup', event = "BufReadPost" },
     { 'stevearc/conform.nvim', event = "BufWritePre", opts = {} },
     { 'kevinhwang91/nvim-bqf', ft = 'qf' },
+    {
+        'echasnovski/mini.pairs',
+        event = "InsertEnter",
+        config = function()
+            require('mini.pairs').setup()
+            local map = require('mini.pairs').map
+            map('i', '<', { action = 'open', pair = '<>', neigh_pattern = '%a.', register = { cr = false } })
+            map('i', '>', { action = 'close', pair = '<>', register = { cr = false } })
+        end,
+    },
     { "junegunn/fzf", lazy = true, build = "./install --bin" },
     {
         'andrewradev/linediff.vim',

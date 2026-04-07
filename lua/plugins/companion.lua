@@ -74,9 +74,6 @@ return {
                     },
                 },
                 adapters = {
-                    acp = {
-                        cursor = "cursor",
-                    },
                     http = {
                         openrouter = require("codecompanion.adapters").extend(function()
                             return require("codecompanion.utils.openrouter")

@@ -46,3 +46,12 @@ vim.opt.undodir = undodir
 
 -- Enable persistent undo
 vim.opt.undofile = true
+
+-- Sync yanks to tmux buffer so both system clipboard and tmux stay in sync
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		if vim.v.event.operator == "y" and os.getenv("TMUX") then
+			vim.fn.system({ "tmux", "load-buffer", "-" }, vim.fn.getreg('"'))
+		end
+	end,
+})
